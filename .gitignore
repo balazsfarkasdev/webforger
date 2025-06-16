@@ -1,0 +1,6 @@
+/apps/superadmin/node_modules
+/apps/superadmin/package-lock.json
+/apps/superadmin/.next
+
+/apps/api/node_modules
+/apps/api/package-lock.json
