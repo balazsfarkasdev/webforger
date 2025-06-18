@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import CreateCompanyComponent from './components/create/page'
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 type Company = {
     id: string
@@ -34,27 +36,39 @@ export default function CompaniesPage() {
         fetchCompanies()
     }, [])
 
-    const handleDelete = async (id: string) => {
-        const confirm = window.confirm("Are you sure you want to delete this company?")
-        if (!confirm) return
-
+    const deleteCompany = async (id: string) => {
         try {
             const res = await fetch(`http://localhost:5000/api/companies/${id}`, {
                 method: 'DELETE',
             })
 
             if (res.ok) {
-                toast.dismiss()
-                toast.success("Company deleted successfully!")
-                await fetchCompanies()
+                toast.success('Company deleted successfully!')
+                fetchCompanies()
             } else {
-                toast.dismiss()
-                toast.error("Failed to delete company")
+                toast.error('Failed to delete company')
             }
         } catch (error) {
-            toast.dismiss()
-            toast.error("Something went wrong")
+            console.error('Error deleting company:', error)
+            toast.error('Something went wrong')
         }
+    }
+
+    const handleDelete = (id: string) => {
+        confirmAlert({
+            title: 'Are you sure?',
+            message: 'This will permanently delete the company.',
+            buttons: [
+                {
+                    label: 'Yes, delete it',
+                    onClick: () => deleteCompany(id)
+                },
+                {
+                    label: 'Cancel',
+                    onClick: () => { } // semmi
+                }
+            ]
+        })
     }
 
     return (
