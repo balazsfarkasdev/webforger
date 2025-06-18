@@ -101,48 +101,14 @@ export default function CompaniesPage() {
                         </tbody>
                     </table>
 
-                    {editingCompany && (
-                        <div className="mt-10 p-6 border rounded-lg shadow-md bg-base-200">
-                            <h2 className="text-xl font-semibold mb-4">Edit Company</h2>
-                            <div className="space-y-4">
-                                <input
-                                    name="name"
-                                    value={editingCompany.name}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered w-full"
-                                />
-                                <input
-                                    name="slug"
-                                    value={editingCompany.slug}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered w-full"
-                                />
-                                <input
-                                    name="email"
-                                    value={editingCompany.email}
-                                    onChange={handleEditChange}
-                                    className="input input-bordered w-full"
-                                />
-                                <select
-                                    name="layout"
-                                    value={editingCompany.layout}
-                                    onChange={handleEditChange}
-                                    className="select select-bordered w-full"
-                                >
-                                    <option value="webshop">Webshop</option>
-                                    <option value="portfolio">Portfolio</option>
-                                    <option value="landing">Landing Page</option>
-                                </select>
-
-                                <button className="btn btn-success w-full" onClick={handleUpdate}>
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    <CreateCompanyComponent onCreated={fetchCompanies} />
-
+                    <CreateCompanyComponent
+                        company={editingCompany || undefined}
+                        onCreated={fetchCompanies}
+                        onUpdated={() => {
+                            fetchCompanies()
+                            setEditingCompany(null)
+                        }}
+                    />
                 </div>
             )}
         </div>
