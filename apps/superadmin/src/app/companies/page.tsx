@@ -32,7 +32,7 @@ export default function CompaniesPage() {
     }, [])
 
     return (
-        <div className="p-8">
+        <div className="p-8 mx-auto max-w-7xl">
             <h1 className="text-3xl font-bold mb-6">Companies</h1>
             {loading ? (
                 <span className="loading loading-spinner text-primary"></span>

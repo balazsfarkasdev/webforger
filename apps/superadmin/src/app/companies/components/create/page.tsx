@@ -42,7 +42,7 @@ export default function CreateCompanyComponent() {
                 <h1 className="text-3xl font-bold mb-6">Create Company</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input name="name" placeholder="Company Name" className="input input-bordered w-full" onChange={handleChange} required />
-                    <input name="slug" placeholder="Slug (e.g. fonalvarazs)" className="input input-bordered w-full" onChange={handleChange} required />
+                    <input name="slug" placeholder="Slug" className="input input-bordered w-full" onChange={handleChange} required />
                     <input name="email" placeholder="Email" type="email" className="input input-bordered w-full" onChange={handleChange} required />
                     <select name="layout" className="select select-bordered w-full" onChange={handleChange} value={formData.layout}>
                         <option value="webshop">Webshop</option>
