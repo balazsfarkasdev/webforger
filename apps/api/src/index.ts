@@ -48,6 +48,21 @@ app.put('/api/companies/:id', async (req, res) => {
     }
 });
 
+app.delete('/api/companies/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedCompany = await prisma.company.delete({
+            where: { id }
+        });
+        res.json(deletedCompany);
+    } catch (error) {
+        console.error('Failed to delete company:', error);
+        res.status(500).json({ error: 'Failed to delete company' });
+    }
+});
+
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

@@ -34,32 +34,22 @@ export default function CompaniesPage() {
         fetchCompanies()
     }, [])
 
-    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        if (editingCompany) {
-            setEditingCompany({ ...editingCompany, [e.target.name]: e.target.value })
-        }
-    }
-
-    const handleUpdate = async () => {
-        if (!editingCompany) return
+    const handleDelete = async (id: string) => {
+        const confirm = window.confirm("Are you sure you want to delete this company?")
+        if (!confirm) return
 
         try {
-            const res = await fetch(`http://localhost:5000/api/companies/${editingCompany.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(editingCompany),
+            const res = await fetch(`http://localhost:5000/api/companies/${id}`, {
+                method: 'DELETE',
             })
 
             if (res.ok) {
                 toast.dismiss()
-                toast.success("Company updated successfully!")
+                toast.success("Company deleted successfully!")
                 await fetchCompanies()
-                setEditingCompany(null)
             } else {
                 toast.dismiss()
-                toast.error("Failed to update company")
+                toast.error("Failed to delete company")
             }
         } catch (error) {
             toast.dismiss()
@@ -81,7 +71,7 @@ export default function CompaniesPage() {
                                 <th>Slug</th>
                                 <th>Email</th>
                                 <th>Layout</th>
-                                <th>Actions</th>
+                                <th colSpan={2}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,6 +84,14 @@ export default function CompaniesPage() {
                                     <td>
                                         <button className="btn btn-sm btn-outline" onClick={() => setEditingCompany(company)}>
                                             Edit
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button
+                                            className="btn btn-sm btn-outline btn-error"
+                                            onClick={() => handleDelete(company.id)}
+                                        >
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>
