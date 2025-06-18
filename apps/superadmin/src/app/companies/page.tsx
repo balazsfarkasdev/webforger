@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import CreateCompanyComponent from './components/create/page'
 
 type Company = {
     id: string
@@ -57,6 +58,7 @@ export default function CompaniesPage() {
                             ))}
                         </tbody>
                     </table>
+                    <CreateCompanyComponent/>
                 </div>
             )}
         </div>
