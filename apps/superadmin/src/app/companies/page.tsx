@@ -101,6 +101,17 @@ export default function CompaniesPage() {
                         </tbody>
                     </table>
 
+                    {editingCompany && (
+                        <div className="max-w-xl mx-auto mt-4">
+                            <button
+                                className="btn btn-sm btn-outline btn-error"
+                                onClick={() => setEditingCompany(null)}
+                            >
+                                Cancel editing
+                            </button>
+                        </div>
+                    )}
+
                     <CreateCompanyComponent
                         company={editingCompany || undefined}
                         onCreated={fetchCompanies}

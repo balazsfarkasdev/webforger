@@ -76,7 +76,7 @@ export default function CreateCompanyComponent({ company, onCreated, onUpdated }
   }
 
   return (
-    <div className="mt-10 p-6 border rounded-lg shadow-md bg-base-200 max-w-xl mx-auto">
+    <div className="mt-4 p-6 border rounded-lg shadow-md bg-base-200 max-w-xl mx-auto">
       <h2 className="text-xl font-semibold mb-4">{company ? 'Edit Company' : 'Create Company'}</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
