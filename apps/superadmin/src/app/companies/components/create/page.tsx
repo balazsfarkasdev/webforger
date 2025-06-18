@@ -114,7 +114,7 @@ export default function CreateCompanyComponent({ company, onCreated, onUpdated }
           <option value="landing">Landing Page</option>
         </select>
 
-        <button type="submit" className="btn btn-success w-full" disabled={loading}>
+        <button type="submit" className="btn btn-primary w-full" disabled={loading}>
           {loading ? (
             <span className="loading loading-spinner" />
           ) : company ? (
