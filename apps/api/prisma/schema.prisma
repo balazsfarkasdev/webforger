@@ -13,4 +13,15 @@ model Company {
   slug       String   @unique
   email      String   @unique
   layout     String 
+
+  PageSection PageSection[]
+}
+
+model PageSection {
+  id        String   @id @default(cuid())
+  companyId String
+  type      String   // pl. "navbar", "hero", "products", "footer"
+  enabled   Boolean  @default(true)
+
+  company   Company  @relation(fields: [companyId], references: [id])
 }

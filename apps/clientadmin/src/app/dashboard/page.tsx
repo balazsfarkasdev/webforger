@@ -1,4 +1,5 @@
 import React from 'react'
+import SectionManager from './section-manager/page'
 
 const DashboardPage = () => {
   return <>
@@ -6,9 +7,7 @@ const DashboardPage = () => {
       <div className="hero-content w-full flex-col lg:flex-row self-start">
         <div className='w-6xl'>
           <h1 className="text-5xl font-bold">Dashboard</h1>
-          <p className="py-6">
-            Create high quality websites in minutes, with customizable UI and functions.
-          </p>
+          <SectionManager companyId="cmbzax12g0001fut0di0fio0m" initialSections={['hero', 'footer']} />
         </div>
       </div>
     </div>
