@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <>
@@ -12,7 +14,7 @@ export default function Home() {
             <p className="py-6">
               Create high quality websites in minutes, with customizable UI and functions.
             </p>
-            <button className="btn btn-primary">Get Started</button>
+            <Link href='/companies' className="btn btn-primary">Get Started</Link>
           </div>
         </div>
       </div>

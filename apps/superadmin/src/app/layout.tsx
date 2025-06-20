@@ -28,6 +28,7 @@ export default function RootLayout({
     <html lang="en" data-theme="light">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        cz-shortcut-listen="true"
       >
         <div className="navbar bg-base-100 shadow-sm">
           <div className="flex-1">
