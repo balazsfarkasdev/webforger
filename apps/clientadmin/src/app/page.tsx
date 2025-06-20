@@ -18,7 +18,7 @@ export default function Home() {
             <p className="py-6">
               Create high quality websites in minutes, with customizable UI and functions.
             </p>
-            <Link href='/companies' className="btn btn-primary">Get Started</Link>
+            <Link href='/dashboard' className="btn btn-primary">Get Started</Link>
           </div>
         </div>
       </div>
