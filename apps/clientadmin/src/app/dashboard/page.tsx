@@ -1,5 +1,5 @@
 import React from 'react'
-import SectionManager from './section-manager/page'
+import SectionManager from './section-manager/SectionManager'
 
 const DashboardPage = () => {
   return <>
