@@ -29,11 +29,7 @@ export default function LoginModal() {
             if (!res.ok) throw new Error(data.message || 'Login failed')
 
             localStorage.setItem('client-auth', 'ok')
-            localStorage.setItem('company', JSON.stringify({
-                companyId: data.companyId,
-                firstName: data.firstName,
-                lastName: data.lastName,
-            }))
+            localStorage.setItem('company-id', data.companyId)
             setIsLoggedIn(true)
             toast.success('Logged in successfully!')
             router.push('/') //TODO: make login and logout smoother

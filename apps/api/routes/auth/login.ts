@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
     }
 
     // TODO: később JWT vagy session
-    return res.json({ success: true, companyId: user.companyId })
+    return res.json({ success: true, companyId: user.companyId, firstName: user.firstName, lastName: user.lastName })
   } catch (error) {
     console.error('Login error:', error)
     return res.status(500).json({ message: 'Internal server error' })

@@ -65,6 +65,9 @@ app.delete('/api/companies/:id', async (req, res) => {
 import authRoutes from '../routes/auth/login'
 app.use('/api/auth', authRoutes)
 
+import clientUserRoutes from '../routes/client-users/clientUser'
+app.use('/api/client-users', clientUserRoutes)
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

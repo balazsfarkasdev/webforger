@@ -23,8 +23,8 @@ model ClientUser {
   password  String
   company   Company? @relation(fields: [companyId], references: [id])
   companyId String?
-  firstName String
-  lastName  String
+  firstName String @default("")
+  lastName  String @default("")
   createdAt DateTime @default(now())
 }
 

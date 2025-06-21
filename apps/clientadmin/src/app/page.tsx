@@ -1,7 +1,10 @@
+'use client'
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+  const company = JSON.parse(localStorage?.getItem('company') || {})
+
   return (
     <>
       <div className="hero bg-base-200 min-h-screen">
@@ -14,9 +17,9 @@ export default function Home() {
             className="rounded-lg shadow-2xl"
           />
           <div>
-            <h1 className="text-5xl font-bold">WebForger</h1>
+            <h1 className="text-5xl font-bold">Hi {company?.firstName}!</h1>
             <p className="py-6">
-              Create high quality websites in minutes, with customizable UI and functions.
+              Start creating your website!
             </p>
             <Link href='/dashboard' className="btn btn-primary">Get Started</Link>
           </div>
