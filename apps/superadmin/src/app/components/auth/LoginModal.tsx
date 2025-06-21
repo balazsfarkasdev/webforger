@@ -23,7 +23,7 @@ export default function LoginModal() {
 
     const handleLogin = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/auth/login', {
+            const res = await fetch('http://localhost:5000/api/auth/superadmin-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -46,7 +46,7 @@ export default function LoginModal() {
             router.push('/')
             window.location.reload()
         } catch (err) {
-            toast.error('Invalid credentials')
+            toast.error(err.message || 'Invalid credentials')
         }
     }
 

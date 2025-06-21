@@ -31,26 +31,26 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         cz-shortcut-listen="true"
       >
+        <Toaster
+          toastOptions={{
+            className: 'bg-base-100 text-base-content shadow-lg',
+            success: {
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: 'white',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: 'white',
+              },
+            },
+          }}
+        />
         <ClientLayout>
           <Navbar />
           {children}
-          <Toaster
-            toastOptions={{
-              className: 'bg-base-100 text-base-content shadow-lg',
-              success: {
-                iconTheme: {
-                  primary: '#22c55e',
-                  secondary: 'white',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: 'white',
-                },
-              },
-            }}
-          />
         </ClientLayout>
       </body>
     </html>

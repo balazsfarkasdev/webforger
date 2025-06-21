@@ -8,30 +8,31 @@ datasource db {
 }
 
 model Company {
-  id     String @id @default(cuid())
-  name   String @unique
-  slug   String @unique
-  email  String @unique
-  layout String
+  id           String        @id @default(cuid())
+  name         String        @unique
+  slug         String        @unique
+  email        String        @unique
+  layout       String
   users        ClientUser[]
   pageSections PageSection[]
 }
 
 model ClientUser {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  company   Company? @relation(fields: [companyId], references: [id])
-  companyId String?
-  firstName String @default("")
-  lastName  String @default("")
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  company      Company? @relation(fields: [companyId], references: [id])
+  companyId    String?
+  isSuperAdmin Boolean  @default(false)
+  firstName    String   @default("")
+  lastName     String   @default("")
+  createdAt    DateTime @default(now())
 }
 
 model PageSection {
-  id      String  @id @default(cuid())
-  type    String // pl. "navbar", "hero", stb.
-  visible Boolean @default(true)
+  id        String  @id @default(cuid())
+  type      String // pl. "navbar", "hero", stb.
+  visible   Boolean @default(true)
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
 }
