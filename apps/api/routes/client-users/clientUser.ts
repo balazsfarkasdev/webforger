@@ -17,9 +17,9 @@ router.get('/', async (req, res) => {
 // Create user
 router.post('/', async (req, res) => {
     try {
-        const { email, password, firstName, lastName, companyId } = req.body
+        const { email, password, firstName, lastName, companyId, companyName } = req.body
         const user = await prisma.clientUser.create({
-            data: { email, password, firstName, lastName, companyId },
+            data: { email, password, firstName, lastName, companyId, companyName },
         })
         res.json(user)
     } catch (err) {
@@ -30,10 +30,10 @@ router.post('/', async (req, res) => {
 // Update user
 router.put('/:id', async (req, res) => {
     try {
-        const { email, password, firstName, lastName, companyId } = req.body
+        const { email, password, firstName, lastName, companyId, companyName } = req.body
         const user = await prisma.clientUser.update({
             where: { id: req.params.id },
-            data: { email, password, firstName, lastName, companyId },
+            data: { email, password, firstName, lastName, companyId, companyName },
         })
         res.json(user)
     } catch (err) {

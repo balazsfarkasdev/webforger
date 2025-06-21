@@ -4,19 +4,23 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-type Props = {
-  company?: {
-    id: string
-    name: string
-    slug: string
-    email: string
-    layout: string
-  }
-  onCreated?: () => void
-  onUpdated?: () => void
+type Company = {
+  id: string
+  name: string
+  slug: string
+  email: string
+  layout: string
 }
 
-export default function CreateCompanyComponent({ company, onCreated, onUpdated }: Props) {
+type Props = {
+  company?: Company
+  editingCompany: Company | null
+  onCreated?: () => void
+  onUpdated?: () => void
+  setEditingCompany?: (company: Company | null) => void
+}
+
+export default function CreateCompanyComponent({ company, onCreated, onUpdated, editingCompany, setEditingCompany }: Props) {
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -114,15 +118,32 @@ export default function CreateCompanyComponent({ company, onCreated, onUpdated }
           <option value="landing">Landing Page</option>
         </select>
 
-        <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-          {loading ? (
-            <span className="loading loading-spinner" />
-          ) : company ? (
-            'Save Changes'
-          ) : (
-            'Create Company'
+        <div className="flex flex-row gap-2">
+          <button type="submit" className="btn btn-primary w-auto" disabled={loading}>
+            {loading ? (
+              <span className="loading loading-spinner" />
+            ) : company ? (
+              'Save Changes'
+            ) : (
+              'Create Company'
+            )}
+          </button>
+          {editingCompany && (
+            <button
+              className="btn btn-outline btn-error w-auto"
+              onClick={() => {
+                setEditingCompany?.(null), setFormData({
+                  name: '',
+                  slug: '',
+                  email: '',
+                  layout: 'webshop',
+                })
+              }}
+            >
+              Cancel editing
+            </button>
           )}
-        </button>
+        </div>
       </form>
     </div>
   )

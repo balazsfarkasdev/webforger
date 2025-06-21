@@ -23,6 +23,7 @@ model ClientUser {
   password     String
   company      Company? @relation(fields: [companyId], references: [id])
   companyId    String?
+  companyName    String?
   isSuperAdmin Boolean  @default(false)
   firstName    String   @default("")
   lastName     String   @default("")

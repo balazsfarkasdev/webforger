@@ -10,7 +10,7 @@ type ClientUser = {
     firstName: string
     lastName: string
     companyId: string
-    company?: { name: string }
+    companyName: string
 }
 
 export default function ClientUsersPage() {
@@ -18,6 +18,10 @@ export default function ClientUsersPage() {
     const [form, setForm] = useState<Partial<ClientUser>>({})
     const [editingId, setEditingId] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        document.title = 'Client Users'
+    }, [])
 
     const fetchUsers = async () => {
         setLoading(true)
@@ -80,39 +84,56 @@ export default function ClientUsersPage() {
 
             <div className="grid grid-cols-2 gap-4 mb-6">
                 <input
-                    className="input input-bordered"
+                    className="input input-bordered w-100"
                     placeholder="Email"
                     value={form.email || ''}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
                 <input
-                    className="input input-bordered"
+                    className="input input-bordered w-100"
                     placeholder="Password"
                     value={form.password || ''}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                 />
                 <input
-                    className="input input-bordered"
+                    className="input input-bordered w-100"
                     placeholder="First Name"
                     value={form.firstName || ''}
                     onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                 />
                 <input
-                    className="input input-bordered"
+                    className="input input-bordered w-100"
                     placeholder="Last Name"
                     value={form.lastName || ''}
                     onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                 />
                 <input
-                    className="input input-bordered col-span-2"
+                    className="input input-bordered w-100"
                     placeholder="Company ID"
                     value={form.companyId || ''}
                     onChange={(e) => setForm({ ...form, companyId: e.target.value })}
                 />
+                <input
+                    className="input input-bordered w-100"
+                    placeholder="Company Name"
+                    value={form.companyName || ''}
+                    onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                />
 
-                <button className="btn btn-primary col-span-2" onClick={handleSubmit}>
-                    {editingId ? 'Update User' : 'Create User'}
-                </button>
+                <div className='flex flex-row gap-2'>
+                    <button className="btn btn-primary max-w-fit " onClick={handleSubmit}>
+                        {editingId ? 'Update User' : 'Create User'}
+                    </button>
+
+                    {editingId && (
+                        <button
+                            className="btn btn-outline btn-error"
+                            onClick={() => { setEditingId(null); setForm({}) }}
+                        >
+                            Cancel editing
+                        </button>
+                    )}
+                </div>
             </div>
 
             <table className="table w-full">
@@ -129,7 +150,7 @@ export default function ClientUsersPage() {
                         <tr key={u.id}>
                             <td>{u.email}</td>
                             <td>{u.firstName} {u.lastName}</td>
-                            <td>{u.company?.name || '-'}</td>
+                            <td>{u.companyName || '-'}</td>
                             <td>
                                 <button className="btn btn-xs btn-outline" onClick={() => {
                                     setForm(u)

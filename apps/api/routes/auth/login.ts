@@ -18,7 +18,7 @@ router.post('/clientadmin-login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
 
-    return res.json({ success: true, companyId: user.companyId, firstName: user.firstName, lastName: user.lastName })
+    return res.json({ success: true, companyId: user.companyId, firstName: user.firstName, lastName: user.lastName, companyName: user.companyName })
   } catch (error) {
     console.error('Login error:', error)
     return res.status(500).json({ message: 'Internal server error' })

@@ -36,6 +36,7 @@ export default function LoginModal() {
                 companyId: data.companyId,
                 firstName: data.firstName,
                 lastName: data.lastName,
+                companyName: data.companyName
             }
 
             localStorage.setItem('client-auth', 'ok')

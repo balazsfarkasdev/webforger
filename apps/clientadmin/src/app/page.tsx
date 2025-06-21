@@ -1,9 +1,12 @@
 'use client'
-import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Home() {
   const company = JSON.parse(localStorage?.getItem('company') || {})
+  useEffect(() => {
+    document.title = `${company?.companyName || ''} - Admin`
+  }, [])
 
   return (
     <>

@@ -1,8 +1,13 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SectionManager from './section-manager/SectionManager'
 
 const DashboardPage = () => {
+  const company = JSON.parse(localStorage?.getItem('company') || {})
+  useEffect(() => {
+    document.title = `${company?.companyName || ''} - Dashboard`
+  }, [])
+
   return <>
     <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content w-full flex-col lg:flex-row self-start">

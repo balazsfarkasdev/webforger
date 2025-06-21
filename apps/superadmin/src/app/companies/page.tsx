@@ -19,6 +19,10 @@ export default function CompaniesPage() {
     const [loading, setLoading] = useState(true)
     const [editingCompany, setEditingCompany] = useState<Company | null>(null)
 
+    useEffect(() => {
+        document.title = 'Companies'
+    }, [])
+
     const fetchCompanies = async () => {
         setLoading(true)
         try {
@@ -72,68 +76,61 @@ export default function CompaniesPage() {
     }
 
     return (
-        <div className="p-8 mx-auto max-w-7xl">
-            <h1 className="text-3xl font-bold mb-6">Companies</h1>
-            {loading ? (
-                <span className="loading loading-spinner text-primary"></span>
-            ) : (
-                <div className="overflow-x-auto">
-                    <table className="table table-zebra w-full">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Slug</th>
-                                <th>Email</th>
-                                <th>Layout</th>
-                                <th colSpan={2}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {companies.map((company) => (
-                                <tr key={company.id}>
-                                    <td>{company.name}</td>
-                                    <td>{company.slug}</td>
-                                    <td>{company.email}</td>
-                                    <td>{company.layout}</td>
-                                    <td>
-                                        <button className="btn btn-sm btn-outline" onClick={() => setEditingCompany(company)}>
-                                            Edit
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button
-                                            className="btn btn-sm btn-outline btn-error"
-                                            onClick={() => handleDelete(company.id)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
+        <>
+            <div className="p-8 mx-auto max-w-7xl">
+                <h1 className="text-3xl font-bold mb-6">Companies</h1>
+                {loading ? (
+                    <span className="loading loading-spinner text-primary"></span>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Slug</th>
+                                    <th>Email</th>
+                                    <th>Layout</th>
+                                    <th colSpan={2}>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {companies.map((company) => (
+                                    <tr key={company.id}>
+                                        <td>{company.name}</td>
+                                        <td>{company.slug}</td>
+                                        <td>{company.email}</td>
+                                        <td>{company.layout}</td>
+                                        <td>
+                                            <button className="btn btn-sm btn-outline" onClick={() => setEditingCompany(company)}>
+                                                Edit
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-sm btn-outline btn-error"
+                                                onClick={() => handleDelete(company.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
 
-                    {editingCompany && (
-                        <div className="max-w-xl mx-auto mt-4">
-                            <button
-                                className="btn btn-sm btn-outline btn-error"
-                                onClick={() => setEditingCompany(null)}
-                            >
-                                Cancel editing
-                            </button>
-                        </div>
-                    )}
-
-                    <CreateCompanyComponent
-                        company={editingCompany || undefined}
-                        onCreated={fetchCompanies}
-                        onUpdated={() => {
-                            fetchCompanies()
-                            setEditingCompany(null)
-                        }}
-                    />
-                </div>
-            )}
-        </div>
+                        <CreateCompanyComponent
+                            company={editingCompany || undefined}
+                            onCreated={fetchCompanies}
+                            onUpdated={() => {
+                                fetchCompanies()
+                                setEditingCompany(null)
+                            }}
+                            editingCompany={editingCompany}
+                            setEditingCompany={setEditingCompany}
+                        />
+                    </div>
+                )}
+            </div>
+        </>
     )
 }

@@ -6,6 +6,7 @@ type AuthState = {
     companyId: string
     firstName: string
     lastName: string
+    companyName: string
   } | null
   login: (data: AuthState['companyData']) => void
   logout: () => void
