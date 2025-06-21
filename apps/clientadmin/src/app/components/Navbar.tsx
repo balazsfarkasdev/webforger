@@ -8,7 +8,7 @@ export default function Navbar() {
         </div>
         <div className="flex-none">
             <ul className="menu menu-horizontal px-1">
-                <li><Link href={'/companies'} className="font-semibold">Companies</Link></li>
+                <li><Link href={'/dashboard'} className="font-semibold">Dashboard</Link></li>
                 <li><LogoutButton /></li>
                 {/* <li>
               <details>

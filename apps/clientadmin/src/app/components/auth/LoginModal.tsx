@@ -3,18 +3,23 @@
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
+import { useAuthStore } from '@store/useAuthStore'
 
 export default function LoginModal() {
     const router = useRouter()
+    const { isLoggedIn, login } = useAuthStore()
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     useEffect(() => {
-        const auth = localStorage.getItem('client-auth')
-        if (auth) setIsLoggedIn(true)
-    }, [])
+        // Check localStorage only on first load
+        const stored = localStorage.getItem('company')
+        if (stored) {
+            const parsed = JSON.parse(stored)
+            login(parsed)
+        }
+    }, [login])
 
     const handleLogin = async () => {
         try {
@@ -25,19 +30,21 @@ export default function LoginModal() {
             })
 
             const data = await res.json()
-
             if (!res.ok) throw new Error(data.message || 'Login failed')
 
-            localStorage.setItem('client-auth', 'ok')
-            localStorage.setItem('company', JSON.stringify({
+            const userData = {
                 companyId: data.companyId,
                 firstName: data.firstName,
                 lastName: data.lastName,
-            }))
-            setIsLoggedIn(true)
+            }
+
+            localStorage.setItem('client-auth', 'ok')
+            localStorage.setItem('company', JSON.stringify(userData))
+
+            login(userData) // Update Zustand store
             toast.success('Logged in successfully!')
             router.push('/')
-            router.refresh()
+            window.location.reload()
         } catch (err) {
             toast.error('Invalid credentials')
         }
