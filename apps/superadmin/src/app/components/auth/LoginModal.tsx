@@ -32,7 +32,8 @@ export default function LoginModal() {
             localStorage.setItem('company-id', data.companyId)
             setIsLoggedIn(true)
             toast.success('Logged in successfully!')
-            router.push('/') //TODO: make login and logout smoother
+            router.push('/') 
+            router.refresh() 
         } catch (err) {
             toast.error('Invalid credentials')
         }

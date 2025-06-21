@@ -36,7 +36,8 @@ export default function LoginModal() {
             }))
             setIsLoggedIn(true)
             toast.success('Logged in successfully!')
-            router.push('/') //TODO: make login and logout smoother
+            router.push('/')
+            router.refresh()
         } catch (err) {
             toast.error('Invalid credentials')
         }

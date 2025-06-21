@@ -18,6 +18,7 @@ export default function LogoutButton() {
         localStorage.removeItem('company-id')
         toast.success('Logged out successfully')
         router.push('/')
+        router.refresh()
     }
 
     if (!visible) return null
