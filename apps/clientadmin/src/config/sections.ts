@@ -3,7 +3,18 @@ import { SectionType } from '@client/types/sections'
 export const SECTION_CONFIG = {
   navbar: {
     label: 'Navigation Bar',
-    icon: '🛒',
+    icon: '🖼️',
+    defaultContent: {
+      logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
+    },
+    defaultStyles: {
+      theme: 'light',
+      alignment: 'center'
+    }
+  },
+  Hero: {
+    label: 'Hero page',
+    icon: '🖼️',
     defaultContent: {
       logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
     },

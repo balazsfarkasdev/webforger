@@ -18,14 +18,14 @@ const SectionManager = ({ companyId }: Props) => {
 
   useEffect(() => {
     if (companyData?.pageSections) {
-      const availableSections = Object.keys(SECTION_CONFIG) as SectionType[]
-      const updated = availableSections
+      const savedSectionTypes = Object.keys(companyData.pageSections) as SectionType[]
+      const updated = savedSectionTypes
         .map((type) => ({
           type,
-          visible: companyData.pageSections?.[type]?.visible ?? false,
-          content: companyData.pageSections?.[type]?.content ?? SECTION_CONFIG[type].defaultContent,
-          styles: companyData.pageSections?.[type]?.styles ?? SECTION_CONFIG[type].defaultStyles,
-          order: companyData.pageSections?.[type]?.order ?? sections.length,
+          visible: companyData.pageSections[type].visible,
+          content: companyData.pageSections[type].content,
+          styles: companyData.pageSections[type].styles,
+          order: companyData.pageSections[type].order,
         }))
         .sort((a, b) => a.order - b.order)
       setSections(updated)
@@ -45,6 +45,12 @@ const SectionManager = ({ companyId }: Props) => {
     toast.success(`Added ${SECTION_CONFIG[type].label} section.`)
   }
 
+  const handleDeleteSection = (index: number) => {
+    const sectionToDelete = sections[index]
+    setSections(prev => prev.filter((_, i) => i !== index))
+    toast.success(`Removed ${SECTION_CONFIG[sectionToDelete.type].label} section.`)
+  }
+
   const handleMoveSection = (index: number, direction: 'up' | 'down') => {
     if (
       (direction === 'up' && index === 0) ||
@@ -56,7 +62,6 @@ const SectionManager = ({ companyId }: Props) => {
     const updated = [...sections];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
-    // Swap orders using destructuring assignment
     [updated[index].order, updated[targetIndex].order] =
       [updated[targetIndex].order, updated[index].order];
 
@@ -101,25 +106,30 @@ const SectionManager = ({ companyId }: Props) => {
     }
   }
 
+  const availableSections = Object.entries(SECTION_CONFIG)
+    .filter(([type]) => !sections.some(s => s.type === type))
+
   return (
     <div className="p-6 rounded-lg bg-base-200 shadow space-y-4">
       <h2 className="text-xl font-semibold">Website Sections</h2>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-medium mb-2">Add Sections</h3>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(SECTION_CONFIG).map(([type, config]) => (
-            <button
-              key={type}
-              className="btn btn-outline btn-sm"
-              onClick={() => handleAddSection(type as SectionType)}
-              disabled={loading || sections.some(s => s.type === type)}
-            >
-              {config.icon} {config.label}
-            </button>
-          ))}
+      {availableSections.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-2">Add Sections</h3>
+          <div className="flex flex-wrap gap-2">
+            {availableSections.map(([type, config]) => (
+              <button
+                key={type}
+                className="btn btn-outline btn-sm"
+                onClick={() => handleAddSection(type as SectionType)}
+                disabled={loading}
+              >
+                {config.icon} {config.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="space-y-6">
         {sections.map((section, index) => (
@@ -156,6 +166,13 @@ const SectionManager = ({ companyId }: Props) => {
                   disabled={loading || index === sections.length - 1}
                 >
                   ↓ Move Down
+                </button>
+                <button
+                  className="btn btn-error btn-xs"
+                  onClick={() => handleDeleteSection(index)}
+                  disabled={loading}
+                >
+                  Delete
                 </button>
               </div>
             </div>
