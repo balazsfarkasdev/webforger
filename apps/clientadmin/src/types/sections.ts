@@ -14,6 +14,10 @@ export type SectionContent = {
   title?: string
   subtitle?: string
   image?: string
+  links?: Array<{
+    label: string
+    path: string
+  }>
 }
 
 export type SectionData = {

@@ -5,18 +5,24 @@ export const SECTION_CONFIG = {
     label: 'Navigation Bar',
     icon: '🖼️',
     defaultContent: {
-      logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
+      logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg',
+      links: [
+        {
+            label: 'Home',
+            path: 'home'
+        }
+      ]
     },
     defaultStyles: {
       theme: 'light',
       alignment: 'center'
     }
   },
-  Hero: {
+  hero: {
     label: 'Hero page',
     icon: '🖼️',
     defaultContent: {
-      logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
+      //logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
     },
     defaultStyles: {
       theme: 'light',

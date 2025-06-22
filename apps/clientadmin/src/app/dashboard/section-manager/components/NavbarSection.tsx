@@ -2,9 +2,14 @@
 
 import { SectionData } from '@client/types/sections'
 import Image from 'next/image'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
 import toast from 'react-hot-toast'
 import { uploadToCloudinary } from '@client/utils/uploadToCloudinary'
+
+interface NavLink {
+    label: string
+    path: string
+}
 
 interface NavbarSectionProps {
     section: SectionData
@@ -13,6 +18,9 @@ interface NavbarSectionProps {
 }
 
 export const NavbarSection = ({ section, onUpdate, loading }: NavbarSectionProps) => {
+    const [newLink, setNewLink] = useState<NavLink>({ label: '', path: '' })
+    const links: NavLink[] = section.content.links || []
+
     const handleLogoUpload = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -30,6 +38,48 @@ export const NavbarSection = ({ section, onUpdate, loading }: NavbarSectionProps
         } catch (err) {
             toast.error('Upload failed')
         }
+    }
+
+    const handleAddLink = () => {
+        if (!newLink.label || !newLink.path) {
+            toast.error('Both label and path are required')
+            return
+        }
+
+        const updatedLinks = [...links, newLink]
+        onUpdate({
+            ...section,
+            content: {
+                ...section.content,
+                links: updatedLinks,
+            },
+        })
+        setNewLink({ label: '', path: '' })
+        toast.success('Link added!')
+    }
+
+    const handleRemoveLink = (index: number) => {
+        const updatedLinks = links.filter((_, i) => i !== index)
+        onUpdate({
+            ...section,
+            content: {
+                ...section.content,
+                links: updatedLinks,
+            },
+        })
+        toast.success('Link removed!')
+    }
+
+    const handleUpdateLink = (index: number, field: keyof NavLink, value: string) => {
+        const updatedLinks = [...links]
+        updatedLinks[index] = { ...updatedLinks[index], [field]: value }
+        onUpdate({
+            ...section,
+            content: {
+                ...section.content,
+                links: updatedLinks,
+            },
+        })
     }
 
     return (
@@ -61,9 +111,64 @@ export const NavbarSection = ({ section, onUpdate, loading }: NavbarSectionProps
                 />
             </div>
 
-            <div className="form-control">
+            <div className="form-control space-y-4">
                 <label className="label">Navigation Links</label>
-                {/* Add navigation links editor here */}
+
+                {/* Existing Links */}
+                {links.map((link, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                        <input
+                            type="text"
+                            className="input input-bordered flex-1"
+                            value={link.label}
+                            onChange={(e) => handleUpdateLink(index, 'label', e.target.value)}
+                            placeholder="Link Label"
+                            disabled={loading}
+                        />
+                        <input
+                            type="text"
+                            className="input input-bordered flex-1"
+                            value={link.path}
+                            onChange={(e) => handleUpdateLink(index, 'path', e.target.value)}
+                            placeholder="Link Path"
+                            disabled={loading}
+                        />
+                        <button
+                            className="btn btn-error btn-sm"
+                            onClick={() => handleRemoveLink(index)}
+                            disabled={loading}
+                        >
+                            Remove
+                        </button>
+                    </div>
+                ))}
+
+                {/* Add New Link */}
+                <div className="flex gap-2 items-center">
+                    <input
+                        type="text"
+                        className="input input-bordered flex-1"
+                        value={newLink.label}
+                        onChange={(e) => setNewLink({ ...newLink, label: e.target.value })}
+                        placeholder="New Link Label"
+                        disabled={loading}
+                    />
+                    <input
+                        type="text"
+                        className="input input-bordered flex-1"
+                        value={newLink.path}
+                        onChange={(e) => setNewLink({ ...newLink, path: e.target.value })}
+                        placeholder="New Link Path"
+                        disabled={loading}
+                    />
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={handleAddLink}
+                        disabled={loading}
+                    >
+                        Add
+                    </button>
+                </div>
             </div>
         </div>
     )
