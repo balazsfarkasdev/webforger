@@ -1,26 +1,11 @@
 'use client'
 
 import { useCompanyStore } from '@client/store/useCompanyStore'
-import { uploadToCloudinary } from '@client/utils/uploadToCloudinary'
-import Image from 'next/image'
+import { SECTION_CONFIG } from '@client/config/sections'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-
-type SectionType = 'navbar' | 'hero' | 'products' | 'about' | 'footer'
-type SectionStyle = {
-  theme?: string
-  alignment?: 'left' | 'center' | 'right'
-}
-
-type SectionData = {
-  type: SectionType
-  visible: boolean
-  content: {
-    logo: string
-  },
-  styles?: SectionStyle
-  order: number // Added order property
-}
+import { SectionData, SectionType } from '@client/types/sections'
+import { SectionRenderer } from './components/SectionRenderer'
 
 interface Props {
   companyId: string
@@ -28,68 +13,36 @@ interface Props {
 
 const SectionManager = ({ companyId }: Props) => {
   const { companyData, setCompanyData } = useCompanyStore()
-  const availableSections: SectionType[] = ['navbar', 'hero', 'products', 'about', 'footer']
-
   const [loading, setLoading] = useState(false)
   const [sections, setSections] = useState<SectionData[]>([])
 
-  // Default stock section configurations
-  const stockSections: Record<string, SectionData> = {
-    header: {
-      type: 'navbar',
-      visible: true,
-      content: {
-        logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
-      },
-      styles: {
-        theme: 'light',
-        alignment: 'center',
-      },
-      order: 0, // Default order for new sections
-    },
-  }
-
   useEffect(() => {
     if (companyData?.pageSections) {
+      const availableSections = Object.keys(SECTION_CONFIG) as SectionType[]
       const updated = availableSections
-        .map((type, index) => ({
+        .map((type) => ({
           type,
           visible: companyData.pageSections?.[type]?.visible ?? false,
-          content: companyData.pageSections?.[type]?.content ?? '',
-          styles: companyData.pageSections?.[type]?.styles ?? {},
-          order: companyData.pageSections?.[type]?.order ?? index, // Use stored order or fallback to index
+          content: companyData.pageSections?.[type]?.content ?? SECTION_CONFIG[type].defaultContent,
+          styles: companyData.pageSections?.[type]?.styles ?? SECTION_CONFIG[type].defaultStyles,
+          order: companyData.pageSections?.[type]?.order ?? sections.length,
         }))
-        .sort((a, b) => a.order - b.order) // Sort sections by order
+        .sort((a, b) => a.order - b.order)
       setSections(updated)
     }
   }, [companyData])
 
-  useEffect(() => {
-    const fetchCompany = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/companies/${companyData?.id}`)
-        const data = await res.json()
-        // Ensure sections are sorted by order
-        setCompanyData(data)
-      } catch (err) {
-        console.error(err)
-        toast.error('Failed to load company data.')
-      }
+  const handleAddSection = (type: SectionType) => {
+    const newSection: SectionData = {
+      type,
+      visible: true,
+      content: SECTION_CONFIG[type].defaultContent,
+      styles: SECTION_CONFIG[type].defaultStyles,
+      order: sections.length,
     }
 
-    if (companyData?.id) {
-      fetchCompany()
-    }
-  }, [companyData?.id])
-
-  const handleAddStockSection = (sectionKey: keyof typeof stockSections) => {
-    const newSection = {
-      ...stockSections[sectionKey],
-      order: sections.length, // Set order to the end of the list
-    }
-
-    setSections((prevState) => [...prevState, newSection])
-    toast.success(`Added ${newSection.type} section.`)
+    setSections((prev) => [...prev, newSection])
+    toast.success(`Added ${SECTION_CONFIG[type].label} section.`)
   }
 
   const handleMoveSection = (index: number, direction: 'up' | 'down') => {
@@ -97,21 +50,22 @@ const SectionManager = ({ companyId }: Props) => {
       (direction === 'up' && index === 0) ||
       (direction === 'down' && index === sections.length - 1)
     ) {
-      return // Prevent moving beyond bounds
+      return;
     }
 
-    const updatedSections = [...sections]
+    const updated = [...sections];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
-    // Swap order values
-    [updatedSections[index].order, updatedSections[targetIndex].order] = [
-      updatedSections[targetIndex].order,
-      updatedSections[index].order,
-    ]
+    // Swap orders using destructuring assignment
+    [updated[index].order, updated[targetIndex].order] =
+      [updated[targetIndex].order, updated[index].order];
 
-    // Sort sections by order
-    updatedSections.sort((a, b) => a.order - b.order)
-    setSections(updatedSections)
+    updated.sort((a, b) => a.order - b.order);
+    setSections(updated);
+  };
+
+  const handleUpdateSection = (index: number, updatedSection: SectionData) => {
+    setSections(prev => prev.map((s, i) => i === index ? updatedSection : s))
   }
 
   const handleSave = async () => {
@@ -120,16 +74,14 @@ const SectionManager = ({ companyId }: Props) => {
       const sectionsObj = sections.reduce((acc, section) => {
         acc[section.type] = {
           visible: section.visible,
-          content: {
-            logo: section.content.logo
-          },
-          styles: section.styles || {},
-          order: section.order, // Include order in saved data
+          content: section.content,
+          styles: section.styles,
+          order: section.order,
         }
         return acc
-      }, {} as Record<SectionType, { visible: boolean; content: object; styles: SectionStyle; order: number }>)
+      }, {} as Record<SectionType, Omit<SectionData, 'type'>>)
 
-      const res = await fetch(`http://localhost:5000/api/companies/${companyId}/sections`, {
+      const res = await fetch(`${window.api}/companies/${companyId}/sections`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pageSections: sectionsObj }),
@@ -153,138 +105,80 @@ const SectionManager = ({ companyId }: Props) => {
     <div className="p-6 rounded-lg bg-base-200 shadow space-y-4">
       <h2 className="text-xl font-semibold">Website Sections</h2>
 
-      <div>
-        <span className="text-m">Stock sections</span>
-        <div className="flex flex-row gap-2">
-          <button
-            className="btn btn-outline btn-sm"
-            onClick={() => handleAddStockSection('navbar')}
-            disabled={loading}
-          >
-            Navbar
-          </button>
+      <div className="mb-6">
+        <h3 className="text-lg font-medium mb-2">Add Sections</h3>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(SECTION_CONFIG).map(([type, config]) => (
+            <button
+              key={type}
+              className="btn btn-outline btn-sm"
+              onClick={() => handleAddSection(type as SectionType)}
+              disabled={loading || sections.some(s => s.type === type)}
+            >
+              {config.icon} {config.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {sections.map((section, index) => (
-        <div key={section.type} className="form-control space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="label cursor-pointer">
-              <span className="label-text capitalize">{section.type}</span>
-              <input
-                type="checkbox"
-                className="checkbox ml-2"
-                checked={section.visible}
-                onChange={() => {
-                  const updated = [...sections]
-                  updated[index].visible = !updated[index].visible
-                  setSections(updated)
-                }}
-                disabled={loading}
-              />
-            </label>
-            <div className="flex gap-2">
-              <button
-                className="btn btn-outline btn-xs"
-                onClick={() => handleMoveSection(index, 'up')}
-                disabled={loading || index === 0}
-              >
-                ↑
-              </button>
-              <button
-                className="btn btn-outline btn-xs"
-                onClick={() => handleMoveSection(index, 'down')}
-                disabled={loading || index === sections.length - 1}
-              >
-                ↓
-              </button>
-            </div>
-          </div>
-          {section.visible && section.type === 'navbar' && (
-            <div className="space-y-2">
-              <label className="block font-medium">Logo</label>
+      <div className="space-y-6">
+        {sections.map((section, index) => (
+          <div key={`${section.type}-${index}`} className="card bg-base-100 p-4 shadow">
+            <div className="flex items-center justify-between mb-4">
+              <label className="label cursor-pointer flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={section.visible}
+                  onChange={() => {
+                    const updated = [...sections]
+                    updated[index].visible = !updated[index].visible
+                    setSections(updated)
+                  }}
+                  disabled={loading}
+                />
+                <span className="label-text font-semibold">
+                  {SECTION_CONFIG[section.type].label}
+                </span>
+              </label>
 
-              <div
-                className="w-32 h-32 relative border rounded cursor-pointer hover:opacity-80 transition"
-                onClick={() => document.getElementById(`logo-upload-${index}`)?.click()}
-              >
-                <Image
-                  src={
-                    section.content.logo?.length
-                      ? section.content.logo
-                      : 'https://cdn1.iconfinder.com/data/icons/office-426/32/office-06022020-13-512.png'
-                  }
-                  alt="Logo preview"
-                  fill
-                  className="object-contain"
+              <div className="flex gap-2">
+                <button
+                  className="btn btn-ghost btn-xs"
+                  onClick={() => handleMoveSection(index, 'up')}
+                  disabled={loading || index === 0}
+                >
+                  ↑ Move Up
+                </button>
+                <button
+                  className="btn btn-ghost btn-xs"
+                  onClick={() => handleMoveSection(index, 'down')}
+                  disabled={loading || index === sections.length - 1}
+                >
+                  ↓ Move Down
+                </button>
+              </div>
+            </div>
+
+            {section.visible && (
+              <div className="pl-8">
+                <SectionRenderer
+                  section={section}
+                  onUpdate={(updated) => handleUpdateSection(index, updated)}
+                  loading={loading}
                 />
               </div>
+            )}
+          </div>
+        ))}
+      </div>
 
-              <input
-                id={`logo-upload-${index}`}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0]
-                  if (!file) return
-
-                  try {
-                    const url = await uploadToCloudinary(file)
-                    setSections((prev) =>
-                      prev.map((s, i) =>
-                        i === index
-                          ? {
-                            ...s,
-                            content: {
-                              ...s.content,
-                              logo: url,
-                            },
-                          }
-                          : s
-                      )
-                    )
-                    toast.success('Logo uploaded!')
-                  } catch (err) {
-                    toast.error('Upload failed')
-                  }
-                }}
-              />
-            </div>
-          )}
-
-          {section.visible && (
-            <div className="flex flex-row gap-2">
-              <label htmlFor="" className="w-auto">
-                Alignment
-              </label>
-              <select
-                className="select select-bordered w-100"
-                value={section.styles?.alignment || 'center'}
-                onChange={(e) => {
-                  const updated = [...sections]
-                  updated[index].styles = {
-                    ...updated[index].styles,
-                    alignment: e.target.value as 'left' | 'center' | 'right',
-                  }
-                  setSections(updated)
-                }}
-              >
-                <option value="left">Left</option>
-                <option value="center">Center</option>
-                <option value="right">Right</option>
-              </select>
-            </div>
-          )}
-        </div>
-      ))}
-
-      <button className="btn btn-primary w-full" onClick={handleSave} disabled={loading}>
-        {loading ? (
-          <span className="loading loading-spinner loading-sm"></span>
-        ) : (
-          'Save Sections'
-        )}
+      <button
+        className="btn btn-primary w-full mt-6"
+        onClick={handleSave}
+        disabled={loading}
+      >
+        {loading ? 'Saving...' : 'Save Sections'}
       </button>
     </div>
   )

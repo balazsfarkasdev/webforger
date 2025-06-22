@@ -25,6 +25,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    window.api = 'http://localhost:5000/api';
+  }, []);
+
   const { isLoggedIn, userData, setUserData } = useAuthStore()
   const { companyData, setCompanyData } = useCompanyStore()
 
@@ -33,7 +37,7 @@ export default function RootLayout({
       if (!isLoggedIn || !companyData?.id) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/companies/${companyData.id}`);
+        const res = await fetch(`${window.api}/companies/${companyData.id}`);
         if (!res.ok) {
           throw new Error(`Failed to fetch company data: ${res.status}`);
         }
@@ -53,7 +57,7 @@ export default function RootLayout({
       if (!isLoggedIn || !userData?.id) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/client-users/${userData?.id}`);
+        const res = await fetch(`${window.api}/client-users/${userData?.id}`);
         if (!res.ok) {
           throw new Error(`Failed to fetch user data: ${res.status}`);
         }
