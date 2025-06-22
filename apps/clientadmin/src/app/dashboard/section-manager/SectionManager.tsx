@@ -30,20 +30,7 @@ const SectionManager = ({ companyId }: Props) => {
   const availableSections: SectionType[] = ['navbar', 'hero', 'products', 'about', 'footer']
 
   const [loading, setLoading] = useState(false)
-  const [sections, setSections] = useState<SectionData[]>(
-    availableSections.map((type) => ({
-      type,
-      visible: false,
-      content: '',
-      styles: {
-        theme: 'light',
-        alignment: 'center',
-        backgroundColor: '#ffffff',
-        textColor: '#000000',
-        padding: '2rem',
-      },
-    }))
-  )
+  const [sections, setSections] = useState<SectionData[]>()
 
   useEffect(() => {
     if (companyData?.pageSections) {
@@ -60,32 +47,24 @@ const SectionManager = ({ companyId }: Props) => {
   useEffect(() => {
     const fetchCompany = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/companies/${companyId}`)
+        const res = await fetch(`http://localhost:5000/api/companies/${companyData?.id}`)
         const data = await res.json()
 
-        if (res.ok && data.sections) {
-          // Ha már van mentett sections
-          const updated = availableSections.map((type) => ({
-            type,
-            visible: data.sections?.[type]?.visible ?? false,
-            content: data.sections?.[type]?.content ?? '',
-            styles: data.sections?.[type]?.styles ?? '',
-          }))
-          setSections(updated)
-        }
+
+        setSections(data.sections)
       } catch (err) {
         toast.error('Failed to load section data.')
       }
     }
 
     fetchCompany()
-  }, [companyId])
+  }, [companyData?.id])
 
   const handleSave = async () => {
     setLoading(true)
     try {
       // JSON struktúra: { navbar: { visible, content }, hero: ... }
-      const sectionsObj = sections.reduce((acc, section) => {
+      const sectionsObj = sections?.reduce((acc, section) => {
         acc[section.type] = {
           visible: section.visible,
           content: section.content,
@@ -118,7 +97,7 @@ const SectionManager = ({ companyId }: Props) => {
     <div className="p-6 rounded-lg bg-base-200 shadow space-y-4">
       <h2 className="text-xl font-semibold">Website Sections</h2>
 
-      {sections.map((section, index) => (
+      {sections?.map((section, index) => (
         <div key={section.type} className="form-control space-y-2">
           <label className="label cursor-pointer justify-between">
             <span className="label-text capitalize">{section.type}</span>
