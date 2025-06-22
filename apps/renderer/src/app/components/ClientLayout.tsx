@@ -11,7 +11,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }, []);
 
     const { setCompanyData } = useCompanyStore()
-
     const searchParams = useSearchParams()
 
     useEffect(() => {
@@ -34,7 +33,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         };
 
         fetchCompany();
-    }, [searchParams])
+    }, [])
 
     return <>{children}</>
 }

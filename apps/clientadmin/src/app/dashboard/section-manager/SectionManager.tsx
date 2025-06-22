@@ -148,7 +148,7 @@ const SectionManager = ({ companyId }: Props) => {
                   disabled={loading}
                 />
                 <span className="label-text font-semibold">
-                  {SECTION_CONFIG[section.type].label}
+                  {SECTION_CONFIG[section.type]?.label}
                 </span>
               </label>
 

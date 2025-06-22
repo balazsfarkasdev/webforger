@@ -9,7 +9,7 @@ export const SECTION_CONFIG = {
       links: [
         {
             label: 'Home',
-            path: 'home'
+            path: ''
         }
       ]
     },
