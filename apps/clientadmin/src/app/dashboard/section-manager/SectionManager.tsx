@@ -5,10 +5,20 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 type SectionType = 'navbar' | 'hero' | 'products' | 'about' | 'footer'
+type SectionStyle = {
+  theme?: string
+  alignment?: 'left' | 'center' | 'right'
+  backgroundColor?: string
+  textColor?: string
+  padding?: string
+  backgroundImage?: string
+}
+
 type SectionData = {
   type: SectionType
   visible: boolean
   content: string
+  styles?: SectionStyle
 }
 
 interface Props {
@@ -25,6 +35,13 @@ const SectionManager = ({ companyId }: Props) => {
       type,
       visible: false,
       content: '',
+      styles: {
+        theme: 'light',
+        alignment: 'center',
+        backgroundColor: '#ffffff',
+        textColor: '#000000',
+        padding: '2rem',
+      },
     }))
   )
 
@@ -34,6 +51,7 @@ const SectionManager = ({ companyId }: Props) => {
         type,
         visible: companyData.pageSections?.[type]?.visible ?? false,
         content: companyData.pageSections?.[type]?.content ?? '',
+        styles: companyData.pageSections?.[type]?.styles ?? '',
       }))
       setSections(updated)
     }
@@ -51,6 +69,7 @@ const SectionManager = ({ companyId }: Props) => {
             type,
             visible: data.sections?.[type]?.visible ?? false,
             content: data.sections?.[type]?.content ?? '',
+            styles: data.sections?.[type]?.styles ?? '',
           }))
           setSections(updated)
         }
@@ -67,9 +86,13 @@ const SectionManager = ({ companyId }: Props) => {
     try {
       // JSON struktúra: { navbar: { visible, content }, hero: ... }
       const sectionsObj = sections.reduce((acc, section) => {
-        acc[section.type] = { visible: section.visible, content: section.content }
+        acc[section.type] = {
+          visible: section.visible,
+          content: section.content,
+          styles: section.styles || {},
+        }
         return acc
-      }, {} as Record<SectionType, { visible: boolean; content: string }>)
+      }, {} as Record<SectionType, { visible: boolean; content: string; styles: SectionStyle }>)
 
       const res = await fetch(`http://localhost:5000/api/companies/${companyId}/sections`, {
         method: 'PUT',
@@ -122,6 +145,51 @@ const SectionManager = ({ companyId }: Props) => {
             }}
             disabled={loading}
           />
+          {section.visible && (
+            <div className="space-y-2">
+              <div className='flex flex-row gap-2'>
+                <label className='w-auto' htmlFor="">Background color</label>
+                <input
+                  type="color"
+                  value={section.styles?.backgroundColor || '#ffffff'}
+                  onChange={(e) => {
+                    const updated = [...sections]
+                    updated[index].styles = { ...updated[index].styles, backgroundColor: e.target.value }
+                    setSections(updated)
+                  }}
+                  className="w-20"
+                />
+              </div>
+              <div className="flex flex-row gap-2">
+                <label className='w-auto' htmlFor="">Text color</label>
+                <input
+                  type="color"
+                  value={section.styles?.textColor || '#000000'}
+                  onChange={(e) => {
+                    const updated = [...sections]
+                    updated[index].styles = { ...updated[index].styles, textColor: e.target.value }
+                    setSections(updated)
+                  }}
+                  className="w-20"
+                />
+              </div>
+              <div className="flex flex-row gap-2">
+                <label htmlFor="" className="w-auto">Alignment</label>
+                <select
+                  className="select select-bordered w-100"
+                  value={section.styles?.alignment || 'center'}
+                  onChange={(e) => {
+                    const updated = [...sections]
+                    updated[index].styles = { ...updated[index].styles, alignment: e.target.value as 'left' | 'center' | 'right' }
+                    setSections(updated)
+                  }}
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select></div>
+            </div>
+          )}
         </div>
       ))}
 
