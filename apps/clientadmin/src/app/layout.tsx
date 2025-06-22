@@ -25,14 +25,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isLoggedIn } = useAuthStore()
+  const { isLoggedIn, userData, setUserData } = useAuthStore()
   const { companyData, setCompanyData } = useCompanyStore()
 
   useEffect(() => {
-    // Only fetch if user is logged in and companyId exists
-    if (!isLoggedIn || !companyData?.id) return;
-
     const fetchCompany = async () => {
+      if (!isLoggedIn || !companyData?.id) return;
+
       try {
         const res = await fetch(`http://localhost:5000/api/companies/${companyData.id}`);
         if (!res.ok) {
@@ -48,6 +47,32 @@ export default function RootLayout({
 
     fetchCompany();
   }, [isLoggedIn, companyData?.id, setCompanyData]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!isLoggedIn || !userData?.id) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/client-users/${userData?.id}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch user data: ${res.status}`);
+        }
+        const data = await res.json();
+        setUserData({
+          id: data.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          companyId: data.companyId
+        });
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        toast.error('Failed to load user data. Please try again.');
+      }
+    };
+
+    fetchUser()
+  }, [isLoggedIn, userData?.id, setUserData]);
 
   return (
     <html lang="en" data-theme="light">

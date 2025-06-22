@@ -14,6 +14,37 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.get('/:id', async (req, res) => {
+  const { id } = req.params
+
+  if (!id) {
+    return res.status(400).json({ message: 'User ID is required' })
+  }
+
+  try {
+    const user = await prisma.clientUser.findUnique({
+      where: { id },
+    })
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    return res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isSuperAdmin: user.isSuperAdmin,
+      companyId: user.companyId,
+      companyName: user.companyName || null,
+    })
+  } catch (error) {
+    console.error('Fetch user error:', error)
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
 // Create user
 router.post('/', async (req, res) => {
     try {

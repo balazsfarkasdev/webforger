@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 type AuthState = {
   isLoggedIn: boolean
   userData: {
+    id: string,
     firstName: string,
     lastName: string,
     email: string
@@ -18,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       isLoggedIn: false,
       userData: {
+        id: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -27,6 +29,7 @@ export const useAuthStore = create<AuthState>()(
         set(() => ({
           isLoggedIn: true,
           userData: {
+            id: user.companyId,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -37,6 +40,7 @@ export const useAuthStore = create<AuthState>()(
         set(() => ({
           isLoggedIn: false,
           userData: {
+            id: '',
             firstName: '',
             lastName: '',
             email: '',

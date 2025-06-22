@@ -33,9 +33,11 @@ export default function LoginModal() {
             if (!res.ok) throw new Error(data.message || 'Login failed')
 
             const userData = {
+                id: data.id,
                 companyId: data.companyId,
                 firstName: data.firstName,
                 lastName: data.lastName,
+                email: data.email
             }
 
             localStorage.setItem('client-auth', 'ok')

@@ -41,6 +41,7 @@ export default function LoginModal() {
             await fetchCompany()
 
             login({
+                id: data.id,
                 email: data.email,
                 firstName: data.firstName,
                 lastName: data.lastName,
