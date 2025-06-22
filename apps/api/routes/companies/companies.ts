@@ -26,6 +26,23 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+router.get('/company/:slug', async (req, res) => {
+  const { slug } = req.params;
+
+  try {
+    const company = await prisma.company.findUnique({
+      where: { slug },
+    });
+
+    if (!company) return res.status(404).json({ message: 'Company not found' });
+
+    res.json(company);
+  } catch (error) {
+    console.error('Failed to fetch company by slug:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.post('/', async (req, res) => {
   const { name, slug, email, layout } = req.body;
   const company = await prisma.company.create({

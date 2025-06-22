@@ -7,7 +7,6 @@ const DashboardPage = () => {
   const { companyData } = useCompanyStore();
 
   useEffect(() => {
-    console.log('companyData:', companyData); // Debug state changes
     document.title = companyData?.name
       ? `${companyData.name} - Dashboard`
       : 'Dashboard';

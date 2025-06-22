@@ -110,7 +110,7 @@ const SectionManager = ({ companyId }: Props) => {
     .filter(([type]) => !sections.some(s => s.type === type))
 
   return (
-    <div className="p-6 rounded-lg bg-base-200 shadow space-y-4">
+    <div className="p-6 rounded-lg bg-base-200 shadow space-y-4 mt-6">
       <h2 className="text-xl font-semibold">Website Sections</h2>
 
       {availableSections.length > 0 && (
