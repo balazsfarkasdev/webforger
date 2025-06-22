@@ -1,24 +1,13 @@
 // components/ClientLayout.tsx
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import LoginModal from './auth/LoginModal'
+import { useAuthStore } from '@client/store/useAuthStore'
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-    const router = useRouter()
-    const [authChecked, setAuthChecked] = useState(false)
+    const { isLoggedIn } = useAuthStore()
 
-    useEffect(() => {
-        const isLoggedIn = localStorage.getItem('client-auth')
-        if (!isLoggedIn) {
-            router.push('/')
-        } else {
-            setAuthChecked(true)
-        }
-    }, [])
-
-    if (!authChecked) {
+    if (!isLoggedIn) {
         return <>
             <LoginModal />
         </>

@@ -14,7 +14,7 @@ model Company {
   email        String        @unique
   layout       String
   users        ClientUser[]
-  pageSections PageSection[]
+  pageSections Json?
 }
 
 model ClientUser {
@@ -23,17 +23,9 @@ model ClientUser {
   password     String
   company      Company? @relation(fields: [companyId], references: [id])
   companyId    String?
-  companyName    String?
+  companyName  String?
   isSuperAdmin Boolean  @default(false)
   firstName    String   @default("")
   lastName     String   @default("")
   createdAt    DateTime @default(now())
-}
-
-model PageSection {
-  id        String  @id @default(cuid())
-  type      String // pl. "navbar", "hero", stb.
-  visible   Boolean @default(true)
-  company   Company @relation(fields: [companyId], references: [id])
-  companyId String
 }

@@ -20,53 +20,14 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.get('/api/companies', async (req, res) => {
-  const companies = await prisma.company.findMany();
-  res.json(companies);
-});
-
-app.post('/api/companies', async (req, res) => {
-  const { name, slug, email, layout } = req.body;
-  const company = await prisma.company.create({
-    data: { name, slug, email, layout },
-  });
-  res.json(company);
-});
-
-app.put('/api/companies/:id', async (req, res) => {
-    const { id } = req.params;
-    const { name, slug, email, layout } = req.body;
-
-    try {
-        const updatedCompany = await prisma.company.update({
-            where: { id },
-            data: { name, slug, email, layout }
-        });
-        res.json(updatedCompany);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update company' });
-    }
-});
-
-app.delete('/api/companies/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const deletedCompany = await prisma.company.delete({
-            where: { id }
-        });
-        res.json(deletedCompany);
-    } catch (error) {
-        console.error('Failed to delete company:', error);
-        res.status(500).json({ error: 'Failed to delete company' });
-    }
-});
-
 import authRoutes from '../routes/auth/login'
 app.use('/api/auth', authRoutes)
 
 import clientUserRoutes from '../routes/client-users/clientUser'
 app.use('/api/client-users', clientUserRoutes)
+
+import companyRoutes from "../routes/companies/companies"
+app.use('/api/companies', companyRoutes)
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

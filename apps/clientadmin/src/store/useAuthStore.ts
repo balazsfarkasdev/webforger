@@ -1,28 +1,52 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 type AuthState = {
   isLoggedIn: boolean
-  companyData: {
+  userData: {
+    firstName: string,
+    lastName: string,
+    email: string
     companyId: string
-    firstName: string
-    lastName: string
-    companyName: string
-  } | null
-  login: (data: AuthState['companyData']) => void
+  }
+  login: (user: { firstName: string, lastName: string, email: string, companyId: string }) => void
   logout: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false,
-  companyData: null,
-  login: (data) =>
-    set(() => ({
-      isLoggedIn: true,
-      companyData: data,
-    })),
-  logout: () =>
-    set(() => ({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
       isLoggedIn: false,
-      companyData: null,
-    })),
-}))
+      userData: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        companyId: ''
+      },
+      login: (user) =>
+        set(() => ({
+          isLoggedIn: true,
+          userData: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            companyId: user.companyId
+          }
+        })),
+      logout: () =>
+        set(() => ({
+          isLoggedIn: false,
+          userData: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            companyId: ''
+          }
+        })),
+    }),
+    {
+      name: 'auth-storage',
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+)

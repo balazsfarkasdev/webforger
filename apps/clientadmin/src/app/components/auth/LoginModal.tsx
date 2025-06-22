@@ -4,22 +4,15 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useAuthStore } from '@store/useAuthStore'
+import { useCompanyStore } from '@client/store/useCompanyStore'
 
 export default function LoginModal() {
     const router = useRouter()
     const { isLoggedIn, login } = useAuthStore()
+    const { setCompanyData } = useCompanyStore()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
-    useEffect(() => {
-        // Check localStorage only on first load
-        const stored = localStorage.getItem('company')
-        if (stored) {
-            const parsed = JSON.parse(stored)
-            login(parsed)
-        }
-    }, [login])
 
     const handleLogin = async () => {
         try {
@@ -32,20 +25,30 @@ export default function LoginModal() {
             const data = await res.json()
             if (!res.ok) throw new Error(data.message || 'Login failed')
 
-            const userData = {
-                companyId: data.companyId,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                companyName: data.companyName
+            const fetchCompany = async () => {
+                try {
+                    const res = await fetch(`http://localhost:5000/api/companies/${data?.companyId}`)
+                    const companyResData = await res.json()
+
+                    if (res.ok) {
+                        setCompanyData(companyResData)
+                    }
+                } catch (err) {
+                    toast.error('Failed to load section data.')
+                }
             }
 
-            localStorage.setItem('client-auth', 'ok')
-            localStorage.setItem('company', JSON.stringify(userData))
+            await fetchCompany()
 
-            login(userData) // Update Zustand store
+            login({
+                email: data.email,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                companyId: data.companyId
+            }) // Update Zustand store
             toast.success('Logged in successfully!')
             router.push('/')
-            window.location.reload()
+            router.refresh()
         } catch (err) {
             toast.error('Invalid credentials')
         }
