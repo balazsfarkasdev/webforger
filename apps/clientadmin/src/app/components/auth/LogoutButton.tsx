@@ -15,7 +15,7 @@ export default function LogoutButton() {
         localStorage.removeItem('company')
         logout()
         setCompanyData({
-            companyId: '',
+            id: '',
             name: '',
             pageSections: []
         })

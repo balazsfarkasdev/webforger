@@ -29,23 +29,25 @@ export default function RootLayout({
   const { companyData, setCompanyData } = useCompanyStore()
 
   useEffect(() => {
-    if (isLoggedIn && companyData?.companyId) {
-      const fetchCompany = async () => {
-        try {
-          const res = await fetch(`http://localhost:5000/api/companies/${companyData?.companyId}`)
-          const data = await res.json()
+    // Only fetch if user is logged in and companyId exists
+    if (!isLoggedIn || !companyData?.id) return;
 
-          if (res.ok) {
-            setCompanyData(data)
-          }
-        } catch (err) {
-          toast.error('Failed to load section data.')
+    const fetchCompany = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/companies/${companyData.id}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch company data: ${res.status}`);
         }
+        const data = await res.json();
+        setCompanyData(data);
+      } catch (err) {
+        console.error('Error fetching company data:', err);
+        toast.error('Failed to load company data. Please try again.');
       }
+    };
 
-      fetchCompany()
-    }
-  }, [isLoggedIn])
+    fetchCompany();
+  }, [isLoggedIn, companyData?.id, setCompanyData]);
 
   return (
     <html lang="en" data-theme="light">

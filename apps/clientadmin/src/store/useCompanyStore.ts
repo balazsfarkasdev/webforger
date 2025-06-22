@@ -10,7 +10,7 @@ type PageSection = {
 
 type CompanyState = {
   companyData: {
-    companyId: string
+    id: string
     name: string
     pageSections: PageSection[]
   } | null

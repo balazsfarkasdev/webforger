@@ -29,7 +29,7 @@ const DashboardPage = () => {
       <div className="hero-content w-full flex-col lg:flex-row self-start">
         <div className='w-6xl'>
           <h1 className="text-5xl font-bold">{companyData?.name} Dashboard</h1>
-          <SectionManager companyId="cmbzax12g0001fut0di0fio0m" />
+          <SectionManager companyId={companyData?.id || ""} />
         </div>
       </div>
     </div>
