@@ -1,6 +1,8 @@
 'use client'
 
 import { useCompanyStore } from '@client/store/useCompanyStore'
+import { uploadToCloudinary } from '@client/utils/uploadToCloudinary'
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -13,7 +15,9 @@ type SectionStyle = {
 type SectionData = {
   type: SectionType
   visible: boolean
-  content: string
+  content: {
+    logo: string
+  },
   styles?: SectionStyle
   order: number // Added order property
 }
@@ -34,7 +38,9 @@ const SectionManager = ({ companyId }: Props) => {
     header: {
       type: 'navbar',
       visible: true,
-      content: 'Default Header Content',
+      content: {
+        logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
+      },
       styles: {
         theme: 'light',
         alignment: 'center',
@@ -114,12 +120,14 @@ const SectionManager = ({ companyId }: Props) => {
       const sectionsObj = sections.reduce((acc, section) => {
         acc[section.type] = {
           visible: section.visible,
-          content: section.content,
+          content: {
+            logo: section.content.logo
+          },
           styles: section.styles || {},
           order: section.order, // Include order in saved data
         }
         return acc
-      }, {} as Record<SectionType, { visible: boolean; content: string; styles: SectionStyle; order: number }>)
+      }, {} as Record<SectionType, { visible: boolean; content: object; styles: SectionStyle; order: number }>)
 
       const res = await fetch(`http://localhost:5000/api/companies/${companyId}/sections`, {
         method: 'PUT',
@@ -145,14 +153,17 @@ const SectionManager = ({ companyId }: Props) => {
     <div className="p-6 rounded-lg bg-base-200 shadow space-y-4">
       <h2 className="text-xl font-semibold">Website Sections</h2>
 
-      <div className="flex gap-2">
-        <button
-          className="btn btn-outline btn-sm"
-          onClick={() => handleAddStockSection('header')}
-          disabled={loading}
-        >
-          Header
-        </button>
+      <div>
+        <span className="text-m">Stock sections</span>
+        <div className="flex flex-row gap-2">
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={() => handleAddStockSection('navbar')}
+            disabled={loading}
+          >
+            Navbar
+          </button>
+        </div>
       </div>
 
       {sections.map((section, index) => (
@@ -189,17 +200,64 @@ const SectionManager = ({ companyId }: Props) => {
               </button>
             </div>
           </div>
-          {section.visible && <textarea
-            className="textarea textarea-bordered w-full"
-            placeholder={`Content for ${section.type}`}
-            value={section.content}
-            onChange={(e) => {
-              const updated = [...sections]
-              updated[index].content = e.target.value
-              setSections(updated)
-            }}
-            disabled={loading}
-          />}
+          {section.visible && section.type === 'navbar' && <>
+            <div className="space-y-2">
+              <label className="block font-medium">Logo</label>
+
+              {section.content.logo && (
+                <div className="w-32 h-32 relative">
+                  <Image
+                    src={section.content.logo}
+                    alt="Logo preview"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  try {
+                    const url = await uploadToCloudinary(file);
+                    console.log("url", url)
+                    setSections((prev) =>
+                      prev.map((section) =>
+                        section.type === 'navbar'
+                          ? {
+                            ...section,
+                            content: {
+                              ...section.content,
+                              logo: url,
+                            },
+                          }
+                          : section
+                      )
+                    );
+
+                    toast.success('Logo uploaded!');
+                  } catch (err) {
+                    toast.error('Upload failed');
+                  }
+                }}
+              />
+            </div>
+            {/* <textarea
+              className="textarea textarea-bordered w-full"
+              placeholder={`Content for ${section.type}`}
+              value={section.content}
+              onChange={(e) => {
+                const updated = [...sections]
+                updated[index].content = e.target.value
+                setSections(updated)
+              }}
+              disabled={loading}
+            /> */}
+          </>}
           {section.visible && (
             <div className="flex flex-row gap-2">
               <label htmlFor="" className="w-auto">
