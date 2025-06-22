@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
-import SectionManager from './section-manager/SectionManager'
 import { useCompanyStore } from '@client/store/useCompanyStore'
+import SectionManager from './section-manager/SectionManager';
 
 const DashboardPage = () => {
   const { companyData } = useCompanyStore();
