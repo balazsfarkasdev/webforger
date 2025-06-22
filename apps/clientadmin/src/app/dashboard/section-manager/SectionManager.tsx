@@ -200,64 +200,59 @@ const SectionManager = ({ companyId }: Props) => {
               </button>
             </div>
           </div>
-          {section.visible && section.type === 'navbar' && <>
+          {section.visible && section.type === 'navbar' && (
             <div className="space-y-2">
               <label className="block font-medium">Logo</label>
 
-              {section.content.logo && (
-                <div className="w-32 h-32 relative">
-                  <Image
-                    src={section.content.logo}
-                    alt="Logo preview"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              )}
+              <div
+                className="w-32 h-32 relative border rounded cursor-pointer hover:opacity-80 transition"
+                onClick={() => document.getElementById(`logo-upload-${index}`)?.click()}
+              >
+                <Image
+                  src={
+                    section.content.logo?.length
+                      ? section.content.logo
+                      : 'https://cdn1.iconfinder.com/data/icons/office-426/32/office-06022020-13-512.png'
+                  }
+                  alt="Logo preview"
+                  fill
+                  className="object-contain"
+                />
+              </div>
 
               <input
+                id={`logo-upload-${index}`}
                 type="file"
                 accept="image/*"
+                className="hidden"
                 onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
+                  const file = e.target.files?.[0]
+                  if (!file) return
 
                   try {
-                    const url = await uploadToCloudinary(file);
-                    console.log("url", url)
+                    const url = await uploadToCloudinary(file)
                     setSections((prev) =>
-                      prev.map((section) =>
-                        section.type === 'navbar'
+                      prev.map((s, i) =>
+                        i === index
                           ? {
-                            ...section,
+                            ...s,
                             content: {
-                              ...section.content,
+                              ...s.content,
                               logo: url,
                             },
                           }
-                          : section
+                          : s
                       )
-                    );
-
-                    toast.success('Logo uploaded!');
+                    )
+                    toast.success('Logo uploaded!')
                   } catch (err) {
-                    toast.error('Upload failed');
+                    toast.error('Upload failed')
                   }
                 }}
               />
             </div>
-            {/* <textarea
-              className="textarea textarea-bordered w-full"
-              placeholder={`Content for ${section.type}`}
-              value={section.content}
-              onChange={(e) => {
-                const updated = [...sections]
-                updated[index].content = e.target.value
-                setSections(updated)
-              }}
-              disabled={loading}
-            /> */}
-          </>}
+          )}
+
           {section.visible && (
             <div className="flex flex-row gap-2">
               <label htmlFor="" className="w-auto">
