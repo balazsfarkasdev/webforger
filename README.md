@@ -46,3 +46,5 @@ WebForger is an interface of a modern website-as-a-service (WaaS) platform. It e
 - Easily add new section types via `types/sections.ts` and `components/sections/*`
 
 | Created with care by Farkas Balázs – Full-Stack Developer |
+## node v22.17.0
+## npm  v11.4.2
