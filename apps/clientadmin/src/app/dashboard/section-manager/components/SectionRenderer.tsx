@@ -2,6 +2,7 @@
 
 import { SectionData } from '@client/types/sections'
 import { NavbarSection } from './NavbarSection'
+import { HeroSection } from './HeroSection'
 
 interface SectionRendererProps {
   section: SectionData
@@ -13,6 +14,8 @@ export const SectionRenderer = ({ section, onUpdate, loading }: SectionRendererP
   switch (section.type) {
     case 'navbar':
       return <NavbarSection section={section} onUpdate={onUpdate} loading={loading} />
+    case 'hero':
+      return <HeroSection section={section} onUpdate={onUpdate} loading={loading} />
     // Add other cases...
     default:
       return null

@@ -8,8 +8,8 @@ export const SECTION_CONFIG = {
       logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg',
       links: [
         {
-            label: 'Home',
-            path: ''
+          label: 'Home',
+          path: ''
         }
       ]
     },
@@ -19,15 +19,18 @@ export const SECTION_CONFIG = {
     }
   },
   hero: {
-    label: 'Hero page',
-    icon: '🖼️',
+    label: 'Hero Section',
+    icon: '🌅',
     defaultContent: {
-      //logo: 'https://icon.icepanel.io/Technology/svg/Next.js.svg'
+      title: 'Welcome to Our Website',
+      subtitle: 'We create stunning experiences',
+      ctaLabel: 'Get Started',
+      ctaPath: '/about',
     },
     defaultStyles: {
       theme: 'light',
-      alignment: 'center'
-    }
+      alignment: 'center',
+    },
   },
 } as const satisfies Record<SectionType, SectionConfig>
 

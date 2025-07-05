@@ -14,6 +14,8 @@ export default function Home() {
       : 'Dashboard';
   }, [companyData, companyData?.name]);
 
+  const hero = companyData?.pageSections?.hero?.content
+
   return (
     <>
       <div className="hero bg-base-200 min-h-screen">
@@ -26,11 +28,11 @@ export default function Home() {
             className="rounded-lg shadow-2xl"
           />
           <div>
-            <h1 className="text-5xl font-bold">{companyData?.name}</h1>
+            <h1 className="text-5xl font-bold">{hero?.title}</h1>
             <p className="py-6">
-              Create high quality websites in minutes, with customizable UI and functions.
+              {hero?.subtitle}
             </p>
-            <Link href='/companies' className="btn btn-primary">Get Started</Link>
+            <Link href={`/${hero?.ctaPath}`} className="btn btn-primary">{hero?.ctaLabel}</Link>
           </div>
         </div>
       </div>

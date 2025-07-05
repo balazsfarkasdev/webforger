@@ -70,8 +70,31 @@ const SectionManager = ({ companyId }: Props) => {
   };
 
   const handleUpdateSection = (index: number, updatedSection: SectionData) => {
-    setSections(prev => prev.map((s, i) => i === index ? updatedSection : s))
-  }
+    setSections((prev) => {
+      const newSections = prev.map((s, i) => (i === index ? updatedSection : s));
+
+      // Check if navbar was updated
+      if (updatedSection.type === 'navbar') {
+        const heroExists = newSections.some((s) => s.type === 'hero');
+        const hasLinks = updatedSection?.content?.links?.length > 0;
+
+        if (!heroExists && hasLinks) {
+          const newHero: SectionData = {
+            type: 'hero',
+            visible: true,
+            content: SECTION_CONFIG['hero'].defaultContent,
+            styles: SECTION_CONFIG['hero'].defaultStyles,
+            order: newSections.length, // add to end
+          };
+
+          toast.success('Hero section added automatically.');
+          return [...newSections, newHero];
+        }
+      }
+
+      return newSections;
+    });
+  };
 
   const handleSave = async () => {
     setLoading(true)
