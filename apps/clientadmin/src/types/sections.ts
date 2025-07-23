@@ -21,6 +21,7 @@ export type SectionContent = {
 }
 
 export type SectionData = {
+  id: string // 🆕
   type: SectionType
   visible: boolean
   content: SectionContent

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { SectionData, SectionType } from '@client/types/sections'
 import { SectionRenderer } from './components/SectionRenderer'
+import { v4 as uuidv4 } from 'uuid'
 
 interface Props {
   companyId: string
@@ -18,14 +19,9 @@ const SectionManager = ({ companyId }: Props) => {
 
   useEffect(() => {
     if (companyData?.pageSections) {
-      const savedSectionTypes = Object.keys(companyData.pageSections) as SectionType[]
-      const updated = savedSectionTypes
-        .map((type) => ({
-          type,
-          visible: companyData.pageSections[type].visible,
-          content: companyData.pageSections[type].content,
-          styles: companyData.pageSections[type].styles,
-          order: companyData.pageSections[type].order,
+      const updated = companyData?.pageSections
+        .map((section: SectionData) => ({
+          ...section
         }))
         .sort((a, b) => a.order - b.order)
       setSections(updated)
@@ -34,6 +30,7 @@ const SectionManager = ({ companyId }: Props) => {
 
   const handleAddSection = (type: SectionType) => {
     const newSection: SectionData = {
+      id: uuidv4(), // 🆕 egyedi azonosító
       type,
       visible: true,
       content: SECTION_CONFIG[type].defaultContent,
@@ -99,38 +96,37 @@ const SectionManager = ({ companyId }: Props) => {
   const handleSave = async () => {
     setLoading(true)
     try {
-      const sectionsObj = sections.reduce((acc, section) => {
-        acc[section.type] = {
-          visible: section.visible,
-          content: section.content,
-          styles: section.styles,
-          order: section.order,
-        }
-        return acc
-      }, {} as Record<SectionType, Omit<SectionData, 'type'>>)
+      const sectionsArr = sections.map((section) => ({
+        id: section.id,
+        type: section.type,
+        visible: section.visible,
+        content: section.content,
+        styles: section.styles,
+        order: section.order,
+      }))
 
       const res = await fetch(`${window.api}/companies/${companyId}/sections`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pageSections: sectionsObj }),
+        body: JSON.stringify({ pageSections: sectionsArr }),
       })
 
       if (!res.ok) throw new Error()
 
       setCompanyData({
         ...companyData,
-        pageSections: sectionsObj,
+        pageSections: sectionsArr,
       })
       toast.success('Sections saved successfully!')
     } catch (err) {
       toast.error('Failed to save sections.')
+      console.error('Error saving sections:', err)
     } finally {
       setLoading(false)
     }
   }
 
   const availableSections = Object.entries(SECTION_CONFIG)
-    .filter(([type]) => !sections.some(s => s.type === type))
 
   return (
     <div className="p-6 rounded-lg bg-base-200 shadow space-y-4 mt-6">
@@ -156,7 +152,7 @@ const SectionManager = ({ companyId }: Props) => {
 
       <div className="space-y-6">
         {sections.map((section, index) => (
-          <div key={`${section.type}-${index}`} className="card bg-base-100 p-4 shadow">
+          <div key={`${section.id}-${index}`} className="card bg-base-100 p-4 shadow">
             <div className="flex items-center justify-between mb-4">
               <label className="label cursor-pointer flex items-center gap-2">
                 <input
